@@ -1,7 +1,8 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm,AuthenticationForm,UsernameField,PasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm,AuthenticationForm,UsernameField,PasswordChangeForm,SetPasswordForm,PasswordResetForm
 from django.contrib.auth.models import User
 from .models import Customer
+
 class LoginForm(AuthenticationForm):
     username = UsernameField(widget=forms.TextInput(attrs={'autofocus': 'True', 'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete':'current-password','class': 'form-control'}))
@@ -30,8 +31,47 @@ class CustomerRegistrationForm(UserCreationForm):
         })
     )
 
-class MyPasswordResetForm(PasswordChangeForm):
-    pass
+class MyPasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(
+        label='Old Password',
+        widget=forms.PasswordInput(attrs={
+            'autofocus': 'True',
+            'autocomplete': 'current-password',
+            'class': 'form-control'
+        })
+    )
+    new_password1 = forms.CharField(
+        label='New Password',
+        widget=forms.PasswordInput(attrs={
+            'autocomplete': 'new-password',
+            'class': 'form-control'
+        })
+    )
+    new_password2 = forms.CharField(
+        label='Confirm Password',
+        widget=forms.PasswordInput(attrs={
+            'autocomplete': 'new-password',
+            'class': 'form-control'
+        })
+    )
+class MyPasswordResetForm(PasswordResetForm):
+    email= forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
+
+class MySetPasswordForm(SetPasswordForm):
+    new_password1 = forms.CharField(
+        label='New Password',
+        widget=forms.PasswordInput(attrs={
+            'autocomplete': 'current-password',
+            'class': 'form-control'
+        })
+    )
+    new_password2 = forms.CharField(
+        label='Confirm New Password',
+        widget=forms.PasswordInput(attrs={
+            'autocomplete': 'current-password',
+            'class': 'form-control'
+        })
+    )
 class CustomerProfileForm(forms.ModelForm):
     class Meta:
         model = Customer
@@ -44,3 +84,11 @@ class CustomerProfileForm(forms.ModelForm):
             'state': forms.Select(attrs={'class': 'form-control'}),
             'zipcode': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
+#payment
+
+class PaymentForm(forms.Form):
+    payment_method = forms.ChoiceField(choices=[('Bkash', 'Bkash'), ('Rocket', 'Rocket'), ('Nagad', 'Nagad')])
+    phone_number = forms.CharField(max_length=20)
+    transaction_id = forms.CharField(max_length=100)
+
